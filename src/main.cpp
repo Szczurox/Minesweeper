@@ -130,6 +130,8 @@ int main() {
 							board[ranX + i][ranY + j]++;
 	}
 
+	drawBoard(hConsole, visibleBoard, x, y);
+
 	while (isRunning) {
 		Sleep(5);
 		if (_kbhit()) {

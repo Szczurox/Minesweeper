@@ -72,12 +72,12 @@ void drawRow(matrixChar board, int x, int i, int boardWidth, bool playerRow) {
 void updateBoard(matrixChar board, int x, int y, bool lastMoveDown, int minesLeft) {
 	int boardWidth = board.size();
 	int boardHeight = board[0].size();
+
 	// Move cursor to 0, 0 and then to y=0 on the board
-	std::cout << "\033[H\033[E\033[E\033[E";
+	std::cout << "\033[H\033[3E";
 
 	// Move cursor to the row the player is currently on
-	for (int i = 0; i <= y; i++)
-		std::cout << "\033[E";
+	std::cout << "\033[" << y + 1 << "E";
 
 	// 4 spaces to add some left margin
 	std::cout << "    ";
@@ -97,13 +97,13 @@ void updateBoard(matrixChar board, int x, int y, bool lastMoveDown, int minesLef
 	}
 	// Player teleported from the bottom to the top (update the last row of the board)
 	else if (lastMoveDown && y == 0) {
-		for (int i = 0; i < boardHeight - 1; i++)
-			std::cout << "\033[E";
+		// Move cursor to the bottom of the board
+		std::cout << "\033[" << boardHeight - 1 << "E";
 		y = boardHeight - 1;
 	}
 	// Player teleported from the top to the bottom (update the first row of the board)
 	else {
-		std::cout << "\033[H\033[E\033[E\033[E\033[E";
+		std::cout << "\033[H\033[4E";
 		y = 0;
 	}
 
@@ -120,7 +120,6 @@ void drawEntireBoard(matrixChar board, int x, int y, int minesLeft) {
 	int boardHeight = board[0].size();
 
 	system("cls");
-
 
 	// Default left margin of 4
 	std::cout << "   ";
@@ -279,18 +278,19 @@ int gameLoop() {
 		// Defaults of the variables are already set to easy
 		break;
 	case 1:   // Medium
-		boardWidth = 20;
-		boardHeight = 20;
+		boardWidth = 16;
+		boardHeight = 16;
 		numOfMines = 30;
 		break;
 	case 2:   // Hard
-		boardWidth = 25;
-		boardHeight = 25;
-		numOfMines = 100;
+		boardWidth = 24;
+		boardHeight = 24;
+		numOfMines = 90;
 		break;
 	default:  // Custom
 		bool pass = false;
 		while (!pass) {
+			std::cout << "\033[0;31mEntire board (including the title) has to fit in the window or else glitches may occur\033[m\n";
 			std::cout << "\033[0;37mboard width: \033[m";      // board width
 			std::cin >> boardWidth;
 			system("cls");

@@ -361,8 +361,7 @@ char AImoveHandle(int& x, int& y, matrix& board, matrixChar& visibleBoard, int& 
 				}
 	}
 	// There are no more unkown tiles and the game didn't end (error?)
-	if (result == -1)
-		return 1;
+	return 1;
 }
 
 

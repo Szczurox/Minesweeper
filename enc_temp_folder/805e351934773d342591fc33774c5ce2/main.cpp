@@ -8,6 +8,7 @@
 
 typedef std::vector<std::vector<int> > matrix;
 typedef std::vector<std::vector<char> > matrixChar;
+typedef std::vector<std::vector<bool> > matrixBool;
 
 // Directional arrays
 // Used for checking tiles surrounding a main tile in this order:

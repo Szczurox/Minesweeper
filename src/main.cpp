@@ -231,7 +231,7 @@ char breakTile(int x, int y, matrix& board, matrixChar& visibleBoard) {
 	else if (board[x][y] == 0) {
 		visibleBoard[x][y] = '_';
 		// Recursively break all surrounding tiles
-		for (int i = 0; i < 9; i++)
+		for (int i = 0; i < 8; i++)
 			if (isTileExisting(x + dx[i], y + dy[i], boardWidth, boardHeight))
 				if(visibleBoard[x + dx[i]][y + dy[i]] != '_' && visibleBoard[x + dx[i]][y + dy[i]] != 'P')
 					breakTile(x + dx[i], y + dy[i], board, visibleBoard);

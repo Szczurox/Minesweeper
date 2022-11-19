@@ -17,7 +17,6 @@ typedef std::vector<std::vector<char> > matrixChar;
 int dx[8] = { -1, 1, -1,  0,  1, -1, 0, 1 };
 int dy[8] = {  0, 0, -1, -1, -1,  1, 1, 1 };
 
-
 // Check if the board is solved
 bool checkBoard(matrix board, matrixChar visibleBoard) {
 	int boardWidth = board.size();
@@ -334,6 +333,18 @@ char AImoveHandle(int& x, int& y, matrix& board, matrixChar& visibleBoard, int& 
 
 			}
 
+	for (int i = 0; i < boardWidth; i++)
+		for (int j = 0; j < boardHeight; j++)
+			if (visibleBoard[i][j] == '#') {
+
+				// Check if there is at least one known field surrounding the tile
+				for (int k = 0; k < 8; k++)
+					if (isTileExisting(i + dx[k], j + dy[k], boardWidth, boardHeight))
+						if (visibleBoard[i + dx[k]][j + dy[k]] != '#' && visibleBoard[i + dx[k]][j + dy[k]] != 'P') {
+							break;
+						}
+			}
+
 	// If the 2 rules don't apply for any tile on the board
 	if (result == -1) {
 		// Choose random tile out of the remaining 
@@ -409,7 +420,7 @@ char moveHandle(char ch, int& x, int& y, bool& lastMoveDown, matrix& board, matr
 
 // Main game loop
 int gameLoop() {
-	int boardWidth = 10, boardHeight = 10;
+	int boardWidth = 9, boardHeight = 9;
 	int numOfMines = 10;
 	int x = 0, y = 0;
 	bool isRunning = true, isWon = false;
@@ -472,10 +483,11 @@ int gameLoop() {
 	default:  // Custom
 		bool pass = false;
 		while (!pass) {
-			std::cout << "\033[0;31mEntire board (including the title) has to fit in the window or else glitches may occur\033[m\n";
+			std::cout << "\033[0;31mEntire board has to fit in the window or else graphical glitches may occur\033[m\n";
 			std::cout << "\033[0;37mboard width: \033[m";      // Board width
 			std::cin >> boardWidth;
 			system("cls");
+			std::cout << "\033[0;31mYou can change to fullscreen mode and press 'R' to play bigger maps\033[m\n";
 			std::cout << "\033[0;37mboard height: \033[m";     // Board height
 			std::cin >> boardHeight;
 			system("cls");
@@ -575,32 +587,43 @@ int gameLoop() {
 				char ch = _getch();
 				// Esc
 				if (ch == 27) return 1;
-				// Handle user input
-				// Move result
-				// 0 - normal move
-				// 1 - mine
-				// 2 - update entire board
-				char moveResult = moveHandle(ch, x, y, lastMoveDown, board, visibleBoard, numOfMines);
-				// Player exploded
-				if (moveResult == 1)
-					isRunning = false;
-				// Player used all the flags
-				if (numOfMines == 0)
-					// Player won
-					if (checkBoard(board, visibleBoard)) {
+				if (ch == 'R' || ch == 'r') drawEntireBoard(visibleBoard, x, y, numOfMines);
+				else {
+					// Handle user input
+					// Move result
+					// 0 - normal move
+					// 1 - mine
+					// 2 - update entire board
+					char moveResult = moveHandle(ch, x, y, lastMoveDown, board, visibleBoard, numOfMines);
+					// Player exploded
+					if (moveResult == 1)
 						isRunning = false;
-						isWon = true;
-					}
+					// Player used all the flags
+					if (numOfMines == 0)
+						// Player won
+						if (checkBoard(board, visibleBoard)) {
+							isRunning = false;
+							isWon = true;
+						}
 
-				// Update entire board only if player found empty space
-				if (moveResult != 2) updateBoard(visibleBoard, x, y, lastMoveDown, numOfMines);
-				else drawEntireBoard(visibleBoard, x, y, numOfMines);
+					// Update entire board only if player found empty space
+					if (moveResult != 2) updateBoard(visibleBoard, x, y, lastMoveDown, numOfMines);
+					else drawEntireBoard(visibleBoard, x, y, numOfMines);
+				}	
 			}
 		}
 	}
 	// AI
 	else {
 		int lastMoveY = 0;
+		char ch = '\033';
+		while (true) {
+			std::cout << "Press [Enter] or [Space] to start";
+			char ch = _getch();	
+			drawEntireBoard(visibleBoard, x, y, numOfMines);
+			if (ch == ' ' || ch == '\r') break;
+		}
+
 		while (isRunning) {
 			// Get move from AI
 			char moveResult = AImoveHandle(x, y, board, visibleBoard, numOfMines);
